@@ -50,7 +50,7 @@ if __name__ == "__main__":
             #Some incoming message from a client
             else:
                 # Data recieved from client, process it
-                #try:
+                try:
                     #In Windows, sometimes when a TCP program closes abruptly,
                     # a "Connection reset by peer" exception will be thrown
                     data = sock.recv(RECV_BUFFER)
@@ -58,12 +58,11 @@ if __name__ == "__main__":
                     if data:
                         broadcast(server_socket, sock, data)
                  
-                # client disconnected, so remove from socket list
-                ##except:
-                ##    broadcast(sock, "Client (%s, %s) is offline" % addr)
-                ##    print "Client (%s, %s) is offline" % addr
-                ##    sock.close()
-                ##    CONNECTION_LIST.remove(sock)
-                ##    continue
+                except:
+                    broadcast(sock, "Client (%s, %s) is offline" % addr)
+                    print "Client (%s, %s) is offline" % addr
+                    sock.close()
+                    CONNECTION_LIST.remove(sock)
+                    continue
          
     server_socket.close()
