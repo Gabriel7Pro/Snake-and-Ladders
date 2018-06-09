@@ -5,7 +5,7 @@ class Server:
 
     def __init__(self):
         self.players = {} #the name of the clients
-        self.Ledder = {1 : 36, 4 : 14, 9 : 31, 21 : 42, 28 : 84, 51 : 67, 71 : 91, 80 : 100}
+        self.ledder = {1 : 36, 4 : 14, 9 : 31, 21 : 42, 28 : 84, 51 : 67, 71 : 91, 80 : 100}
         self.snakes = {17 : 7, 54 : 34, 62 : 19, 64 : 60, 87 : 24, 93 : 73, 95 : 75, 98 : 79}
         self.counter = 0
         self.colors = ['red', 'yellow', 'green', 'blue']
@@ -37,10 +37,10 @@ class Server:
         self.CONNECTION_LIST.append(self.server_socket)
 
     
-    def broadcast(self,sock,message):
+    def broadcast(self,message):
         for socket in self.CONNECTION_LIST:
             # send the message only to peer
-            if socket != self.server_socket and socket != sock :
+            if socket != self.server_socket:
                 try :
                     socket.send(message)
                 except :
@@ -87,6 +87,16 @@ class Server:
                                 self.players[str(data2[1])] = self.colors[self.counter]
                                 self.counter = self.counter + 1
                                 print "Client " + str(data2[1]) + " is online"
+
+                            elif 'move' in data:
+                                data2 = data.split(' ')
+                                final = data[2] + data[3]
+                                if final in ledder:
+                                    final = ledder[final]
+                                elif final in snakes:
+                                    final = snakes[final]
+                                message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
+                                broadcast(message)
 
                     except:
                         name = self.Get_Name(sock)
