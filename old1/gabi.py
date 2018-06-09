@@ -6,9 +6,9 @@ def game(screen):
     screen = pygame.display.set_mode((800, 800),0)
     screen.blit(img3,(0,0))
     running = True
+    Username = raw_input("what is your name?")
     s=socket.socket()
     s.connect(("127.0.0.1",5000))
-    Username = raw_input("what is your name?")
     s.send(Username)
     Da= None
     while running:
