@@ -5,11 +5,13 @@ class Server:
 
     def __init__(self):
         self.players = {} #the name of the clients
+        self.Ledder = {1 : 36, 4 : 14, 9 : 31, 21 : 42, 28 : 84, 51 : 67, 71 : 91, 80 : 100}
+        self.snakes = {17 : 7, 54 : 34, 62 : 19, 64 : 60, 87 : 24, 93 : 73, 95 : 75, 98 : 79}
         self.counter = 0
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 5014
+        self.PORT = 5057
         self.server_socket = None
 
     def closeConnection(self):
