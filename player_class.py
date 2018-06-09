@@ -36,7 +36,7 @@ class Player:
     def main_screen(self):
         pygame.init()
         img = pygame.image.load('Super-Smash-Bros.jpg')
-        img2 = pygame.image.load('Super_Smash_Bros._Logo.png')
+        img2 = pygame.image.load('snakes_ladders.png')
         #pygame.mixer.music.load('start.ogg')
         #pygame.mixer.music.play(-1)
         self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
@@ -111,7 +111,7 @@ class Player:
         
     def game(self):
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",5018))
+        self.s.connect(("127.0.0.1",6057))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
