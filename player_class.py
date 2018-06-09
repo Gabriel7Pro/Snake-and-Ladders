@@ -2,9 +2,6 @@ import pygame
 import socket
 import select
 from Tkinter import *
-import random
-import easygui
-
 
 class Player:
 
@@ -23,6 +20,7 @@ class Player:
         self.red=(255,0,0)
         self.black=(0,0,0)
         self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
+        
 
     def closeConnection(self):
         self.s.send("disconnecttt")
@@ -88,8 +86,11 @@ class Player:
         pygame.init()
         img3 =  pygame.image.load('boared.jpg')
         img3 = pygame.transform.scale(img3, (pygame.display.get_surface().get_size()[0]/9*5,pygame.display.get_surface().get_size()[0]/9*5))       
+        img4 = pygame.image.load('oak.jpg')
+        img4 = pygame.transform.scale(img4, (pygame.display.get_surface().get_size()[0]/9*7,pygame.display.get_surface().get_size()[0]/9*5))
         self.screen = pygame.display.set_mode((pygame.display.get_surface().get_size()[0]/9*7,pygame.display.get_surface().get_size()[0]/9*5),0)
         self.screen.fill(self.white)
+        self.screen.blit(img4,(0,0))
         self.screen.blit(img3,(0,0))
         pygame.draw.rect(self.screen,self.red,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/6,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
         pygame.draw.rect(self.screen,self.yellow,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
@@ -110,7 +111,7 @@ class Player:
         
     def game(self):
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",5057))
+        self.s.connect(("127.0.0.1",5018))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
