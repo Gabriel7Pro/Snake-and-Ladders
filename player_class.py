@@ -2,11 +2,14 @@ import pygame
 import socket
 import select
 from Tkinter import *
+import random
+import easygui
 
 
 class Player:
 
     def __init__(self):
+        pygame.init()
         self.Username = ""
         self.Players = []
         self.master = Tk()
@@ -14,7 +17,12 @@ class Player:
         self.screen = None
         self.white = (255, 255, 255)
         self.s = None
-
+        self.blue=(0,0,255)
+        self.green=(0,255,0)
+        self.yellow=(255,255,0)
+        self.red=(255,0,0)
+        self.black=(0,0,0)
+        self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
 
     def closeConnection(self):
         self.s.send("disconnecttt")
@@ -33,21 +41,21 @@ class Player:
         img2 = pygame.image.load('Super_Smash_Bros._Logo.png')
         #pygame.mixer.music.load('start.ogg')
         #pygame.mixer.music.play(-1)
-        myfont = pygame.font.SysFont('Comic Sans MS', 40)
+        self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
         
-        play_ = myfont.render('PLAY', False, self.white)
-        options_ = myfont.render('OPTIONS', False, self.white)
-        quit_ = myfont.render('QUIT', False, self.white)
+        play_ = self.myfont.render('PLAY', False, self.white)
+        options_ = self.myfont.render('OPTIONS', False, self.white)
+        quit_ = self.myfont.render('QUIT', False, self.white)
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         img = pygame.transform.scale(img, pygame.display.get_surface().get_size())
         img2 = pygame.transform.scale(img2, (pygame.display.get_surface().get_size()[0]/2,pygame.display.get_surface().get_size()[1]/5*2))
         self.screen.fill((self.white))
-        blue=(0,0,255)
+        self.blue=(0,0,255)
         self.screen.blit(img,(0,0))
         self.screen.blit(img2,(pygame.display.get_surface().get_size()[0]/4,0))
-        pygame.draw.rect(self.screen,blue,(pygame.display.get_surface().get_size()[0]*3/8,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,blue,(pygame.display.get_surface().get_size()[0]*3/8,pygame.display.get_surface().get_size()[1]/1.6,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,blue,(pygame.display.get_surface().get_size()[0]*3/8,pygame.display.get_surface().get_size()[1]/1.34,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*3/8,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*3/8,pygame.display.get_surface().get_size()[1]/1.6,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*3/8,pygame.display.get_surface().get_size()[1]/1.34,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
         button_play = self.screen.blit(play_,(pygame.display.get_surface().get_size()[0]*30/64,pygame.display.get_surface().get_size()[1]/2))
         button_options = self.screen.blit(options_,(pygame.display.get_surface().get_size()[0]*28/64,pygame.display.get_surface().get_size()[1]/1.6))
         button_quit = self.screen.blit(quit_,(pygame.display.get_surface().get_size()[0]*30/64,pygame.display.get_surface().get_size()[1]/1.34))
@@ -79,9 +87,16 @@ class Player:
     def Login(self):
         pygame.init()
         img3 =  pygame.image.load('boared.jpg')
-        img3 = pygame.transform.scale(img3, (800,800))
-        self.screen = pygame.display.set_mode((800, 800),0)
+        img3 = pygame.transform.scale(img3, (pygame.display.get_surface().get_size()[0]/9*5,pygame.display.get_surface().get_size()[0]/9*5))       
+        self.screen = pygame.display.set_mode((pygame.display.get_surface().get_size()[0]/9*7,pygame.display.get_surface().get_size()[0]/9*5),0)
+        self.screen.fill(self.white)
         self.screen.blit(img3,(0,0))
+        pygame.draw.rect(self.screen,self.red,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/6,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.yellow,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.green,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3*2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        players_ = self.myfont.render('PLAYERS:', False, self.black)
+        self.screen.blit(players_,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/13))
         Label(self.master, text="Username: ").grid(row=0, sticky=W)
         self.master.title('Login')
         self.entry = Entry(self.master)
@@ -95,7 +110,7 @@ class Player:
         
     def game(self):
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",5014))
+        self.s.connect(("127.0.0.1",5057))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
