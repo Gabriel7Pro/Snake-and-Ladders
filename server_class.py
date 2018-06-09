@@ -9,7 +9,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 5011
+        self.PORT = 5012
         self.server_socket = None
 
     def closeConnection(self):
@@ -46,7 +46,10 @@ class Server:
                     socket.close()
                     # broken socket, remove it
                     if socket in self.CONNECTION_LIST:
+                        name = self.Get_Name(socket)
+                        del players[name]
                         self.CONNECTION_LIST.remove(socket)
+
                                                
     def login(self):
         game_wait=True
@@ -70,7 +73,7 @@ class Server:
                         if data:
                             if "disconnecttt"==data:
                                 name = self.Get_Name(sock)
-                                print "Client " + str(self.players[name]) + " is offline"
+                                print "Client " + str(name) + " is offline"
                                 del self.players[name]
                                 sock.close()
                                 self.CONNECTION_LIST.remove(sock)
@@ -79,27 +82,19 @@ class Server:
 
                             elif "nameeeeeeeeee" in data:
                                 data2 = data.split(' ')
-                                self.players[str(data2)] = self.colors[self.counter]
+                                self.players[str(data2[1])] = self.colors[self.counter]
                                 self.counter = self.counter + 1
-                                print "Client " + str(self.players[str(data2)]) + " is online"
-
-                            
-
-
-                                
-                            else:
-                                self.broadcast(sock, data)
+                                print "Client " + str(data2[1]) + " is online"
 
                     except:
                         name = self.Get_Name(sock)
                         print "Client " + str(self.players[name]) + " is offline"
                         del self.players[name]
-                        sock.close()
+                       sock.close()
                         self.CONNECTION_LIST.remove(sock)
                         if len(self.CONNECTION_LIST)==1:
                             game_wait=False
                         continue
-
 
 def main():
     server = Server()
