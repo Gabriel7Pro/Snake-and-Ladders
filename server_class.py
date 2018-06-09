@@ -11,7 +11,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 5057
+        self.PORT = 5018
         self.server_socket = None
 
     def closeConnection(self):
@@ -90,7 +90,7 @@ class Server:
 
                             elif 'move' in data:
                                 data2 = data.split(' ')
-                                final = data[2] + data[3]
+                                final = int(data[2]) + int(data[3])
                                 if final in ledder:
                                     final = ledder[final]
                                 elif final in snakes:
