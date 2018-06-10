@@ -27,12 +27,11 @@ class Server:
             index = index - 1
 
     def Get_ready(self):
-        x = 0
-        for boo in self.ready:
-            if boo:
-                x = x + 1
-        if x == self.counter and self.counter > 0:
-            print 'all are ready'
+        if counter > 0:
+            for boo in self.ready:
+                if not boo:
+                    return False
+            print 'ready'
             return True
         else:
             return False
