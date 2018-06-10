@@ -15,6 +15,7 @@ class Server:
         self.readylist = {}
         self.counter = 0
         self.gameon = False
+        self.turns = 1
 
     def closeConnection(self):
         self.server_socket.close()
@@ -37,7 +38,11 @@ class Server:
             print "no pip"
             return False
 
-
+    def Send_Name(self):
+        mess = "name"
+        for name, ready in self.players.iteritems():
+            mess = mess + " " + name + " " + color
+        self.broadcast(mess)
     
     def create(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -69,7 +74,7 @@ class Server:
                                                
     def login(self):
         game_wait=True
-        while game_wait:
+        while game_wait and not gameon:
             print self.counter
             # Get the list sockets which are ready to be read through select
             read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[]) 
@@ -114,7 +119,7 @@ class Server:
 
                             elif 'move' in data and self.gameon:
                                 data2 = data.split(' ')
-                                final = int(data[2]) + int(data[3])
+                                final = int(data2[2]) + int(data2[3])
                                 if final > 100:
                                     sub = final % 100
                                     final = 100 - sub
@@ -136,6 +141,39 @@ class Server:
                         if len(self.CONNECTION_LIST)==1:
                             game_wait=False
                         continue
+
+        self.Send_Name()
+        while gameon:
+            self.CONNECTION_LIST[self.turns].send("turn")
+            data = self.CONNECTION_LIST[self.turns].recv(RECV_BUFFER)            
+            self.turns = self.turns + 1
+            if turns > counter:
+                turns = 0
+                
+            if "disconnecttt"==data:
+                name = self.Get_Name(sock)
+                print "Client " + str(name) + " is offline"
+                self.counter = self.counter - 1
+                del self.players[name]
+                del self.readylist[name]
+                sock.close()
+                self.CONNECTION_LIST.remove(sock)
+                if len(self.CONNECTION_LIST)==1:
+                game_wait=False
+
+            elif 'move' in data and self.gameon:
+                data2 = data.split(' ')
+                final = int(data2[2]) + int(data2[3])
+                if final > 100:
+                    sub = final % 100
+                    final = 100 - sub
+                if final in ledder:
+                    final = ledder[final]
+                elif final in snakes:
+                    final = snakes[final]
+                message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
+                broadcast(message)
+
 
 
 
