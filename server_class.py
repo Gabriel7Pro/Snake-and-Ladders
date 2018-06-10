@@ -100,6 +100,7 @@ class Server:
                                 data2 = data.split(' ')
                                 self.players[str(data2[1])] = self.colors[self.counter]
                                 self.counter = self.counter + 1
+                                self.ready.append(False)
                                 print "Client " + str(data2[1]) + " is online"
 
                             elif 'ready' in data:
