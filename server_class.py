@@ -7,7 +7,7 @@ class Server:
         self.players = {} #the name of the clients
         self.ledder = {1 : 36, 4 : 14, 9 : 31, 21 : 42, 28 : 84, 51 : 67, 71 : 91, 80 : 100}
         self.snakes = {17 : 7, 54 : 34, 62 : 19, 64 : 60, 87 : 24, 93 : 73, 95 : 75, 98 : 79}
-        self.counter = 0
+        self.counter
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
@@ -27,7 +27,7 @@ class Server:
             index = index - 1
 
     def Get_ready(self):
-        if self.counteready > 0:
+        if self.counter > 0:
             for boo in self.ready:
                 if not boo:
                     return False
@@ -46,6 +46,7 @@ class Server:
         
         # Add server socket to the list of readable connections
         self.CONNECTION_LIST.append(self.server_socket)
+        self.counter = 0
 
     
     def broadcast(self,message):
@@ -78,22 +79,24 @@ class Server:
                 #Some incoming message from a client
                 else:
                     # Data recieved from client, process it
-
+                    try:
                         #In Windows, sometimes when a TCP program closes abruptly,
                         # a "Connection reset by peer" exception will be thrown
                         data = sock.recv(self.RECV_BUFFER)
+                        allready = self.Get_ready()
                         # echo back the client message
                         if data:
                             if "disconnecttt"==data:
                                 name = self.Get_Name(sock)
                                 print "Client " + str(name) + " is offline"
+                                self.counter = self.counter - 1
                                 del self.players[name]
                                 sock.close()
                                 self.CONNECTION_LIST.remove(sock)
                                 if len(self.CONNECTION_LIST)==1:
                                     game_wait=False
 
-                            elif "nameeeeeeeeee" in data and not self.Get_ready():
+                            elif "nameeeeeeeeee" in data and not allready:
                                 data2 = data.split(' ')
                                 self.players[str(data2[1])] = self.colors[self.counter]
                                 self.counter = self.counter + 1
@@ -104,7 +107,7 @@ class Server:
                                 self.ready[self.counteready] = True
                                 self.counteready = self.counteready + 1
 
-                            elif 'move' in data and self.Get_ready():
+                            elif 'move' in data and allready:
                                 data2 = data.split(' ')
                                 final = int(data[2]) + int(data[3])
                                 if final > 100:
@@ -116,6 +119,18 @@ class Server:
                                     final = snakes[final]
                                 message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
                                 broadcast(message)
+
+                    except:
+                        name = self.Get_Name(sock)
+                        print "Client " + str(self.players[name]) + " is offline"
+                        self.counter = self.counter - 1
+                        del self.players[name]
+                        sock.close()
+                        self.CONNECTION_LIST.remove(sock)
+                        if len(self.CONNECTION_LIST)==1:
+                            game_wait=False
+                        continue
+
 
 
 
