@@ -40,7 +40,7 @@ class Server:
 
     def Send_Name(self):
         mess = "name"
-        for name, ready in self.players.iteritems():
+        for name, color in self.players.iteritems():
             mess = mess + " " + name + " " + color
         self.broadcast(mess)
     
@@ -144,8 +144,10 @@ class Server:
 
         self.Send_Name()
         while self.gameon:
+            read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[])
             self.CONNECTION_LIST[self.turns].send("turn")
-            data = self.CONNECTION_LIST[self.turns].recv(RECV_BUFFER)            
+            for sock in read_sockets:
+                data = sock.recv(self.RECV_BUFFER)            
             self.turns = self.turns + 1
             if self.turns > self.counter:
                 self.turns = 0
