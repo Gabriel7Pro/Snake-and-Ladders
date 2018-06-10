@@ -30,6 +30,7 @@ class Server:
         for boo in self.ready:
             if not boo:
                 return False
+        print 'all are ready'
         return True
 
 
