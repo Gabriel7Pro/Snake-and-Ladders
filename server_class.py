@@ -21,7 +21,7 @@ class Server:
 
     def Get_Name(self, sock):
         index = self.CONNECTION_LIST.index(sock) - 1
-        for name in self.players:
+        for name, color in self.players.iteritems():
             if index == 0:
                 return name
             index = index - 1
@@ -99,7 +99,7 @@ class Server:
                                 if len(self.CONNECTION_LIST)==1:
                                     game_wait=False
 
-                            elif "nameeeeeeeeee" in data and not gameon:
+                            elif "nameeeeeeeeee" in data and not self.gameon:
                                 data2 = data.split(' ')
                                 self.players[str(data2[1])] = self.colors[self.counter]
                                 self.readylist[str(data2[1])] = False
@@ -109,10 +109,10 @@ class Server:
                             elif "ready" in data:
                                 name = self.Get_Name(sock)
                                 self.readylist[name] = True
-                                gameon = Ready_game()
+                                self.gameon = Ready_game()
 
 
-                            elif 'move' in data and gameon:
+                            elif 'move' in data and self.gameon:
                                 data2 = data.split(' ')
                                 final = int(data[2]) + int(data[3])
                                 if final > 100:
