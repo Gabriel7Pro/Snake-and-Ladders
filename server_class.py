@@ -146,35 +146,35 @@ class Server:
         while self.gameon:
             read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[])
             self.CONNECTION_LIST[self.turns].send("turn")
-            for sock in read_sockets:
-                data = sock.recv(self.RECV_BUFFER)            
             self.turns = self.turns + 1
             if self.turns > self.counter:
                 self.turns = 0
+            for sock in read_sockets:
+                data = sock.recv(self.RECV_BUFFER)            
 
-            if "disconnecttt"==data:
-                name = self.Get_Name(sock)
-                print "Client " + str(name) + " is offline"
-                self.counter = self.counter - 1
-                del self.players[name]
-                del self.readylist[name]
-                sock.close()
-                self.CONNECTION_LIST.remove(sock)
-                if len(self.CONNECTION_LIST)==1:
-                    self.gameon = False
+                if "disconnecttt"==data:
+                    name = self.Get_Name(sock)
+                    print "Client " + str(name) + " is offline"
+                    self.counter = self.counter - 1
+                    del self.players[name]
+                    del self.readylist[name]
+                    sock.close()
+                    self.CONNECTION_LIST.remove(sock)
+                    if len(self.CONNECTION_LIST)==1:
+                        self.gameon = False
 
-            elif 'move' in data and self.gameon:
-                data2 = data.split(' ')
-                final = int(data2[2]) + int(data2[3])
-                if final > 100:
-                    sub = final % 100
-                    final = 100 - sub
-                if final in ledder:
-                    final = ledder[final]
-                elif final in snakes:
-                    final = snakes[final]
-                message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
-                broadcast(message)
+                elif 'move' in data and self.gameon:
+                    data2 = data.split(' ')
+                    final = int(data2[2]) + int(data2[3])
+                    if final > 100:
+                        sub = final % 100
+                        final = 100 - sub
+                    if final in ledder:
+                        final = ledder[final]
+                    elif final in snakes:
+                        final = snakes[final]
+                    message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
+                    broadcast(message)
 
 
 
