@@ -37,6 +37,7 @@ class Server:
             print "no pip"
             return False
 
+
     
     def create(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -60,6 +61,7 @@ class Server:
                     # broken socket, remove it
                     if socket in self.CONNECTION_LIST:
                         name = self.Get_Name(socket)
+                        del readylist[name]
                         del players[name]
                         self.counter = self.counter - 1
                         self.CONNECTION_LIST.remove(socket)
@@ -80,7 +82,7 @@ class Server:
                 #Some incoming message from a client
                 else:
                     # Data recieved from client, process it
-                    try:
+                    ##try:
                         #In Windows, sometimes when a TCP program closes abruptly,
                         # a "Connection reset by peer" exception will be thrown
                         data = sock.recv(self.RECV_BUFFER)
@@ -91,6 +93,7 @@ class Server:
                                 print "Client " + str(name) + " is offline"
                                 self.counter = self.counter - 1
                                 del self.players[name]
+                                del readylist[name]
                                 sock.close()
                                 self.CONNECTION_LIST.remove(sock)
                                 if len(self.CONNECTION_LIST)==1:
@@ -122,16 +125,17 @@ class Server:
                                 message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
                                 broadcast(message)
 
-                    except:
-                        name = self.Get_Name(sock)
-                        print "Client " + str(self.players[name]) + " is offline"
-                        self.counter = self.counter - 1
-                        del self.players[name]
-                        sock.close()
-                        self.CONNECTION_LIST.remove(sock)
-                        if len(self.CONNECTION_LIST)==1:
-                            game_wait=False
-                        continue
+                    ##except:
+                    ##    name = self.Get_Name(sock)
+                    ##    print "Client " + str(self.players[name]) + " is offline"
+                    ##    self.counter = self.counter - 1
+                    ##    del readylist[name]
+                    ##    del self.players[name]
+                    ##    sock.close()
+                    ##    self.CONNECTION_LIST.remove(sock)
+                    ##    if len(self.CONNECTION_LIST)==1:
+                    ##        game_wait=False
+                    ##    continue
 
 
 
