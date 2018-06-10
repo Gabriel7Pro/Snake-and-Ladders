@@ -2,7 +2,6 @@ import socket
 import select
 
 class Server:
-    counter = 0
 
     def __init__(self):
         self.players = {} #the name of the clients
@@ -11,10 +10,11 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 6057
+        self.PORT = 3042
         self.server_socket = None
         self.ready = []
         self.counteready = 0
+        self.counter = 0
 
     def closeConnection(self):
         self.server_socket.close()
@@ -67,6 +67,8 @@ class Server:
     def login(self):
         game_wait=True
         while game_wait:
+            allready = self.Get_ready()
+            print self.counter
             # Get the list sockets which are ready to be read through select
             read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[]) 
             for sock in read_sockets:
@@ -82,7 +84,6 @@ class Server:
                         #In Windows, sometimes when a TCP program closes abruptly,
                         # a "Connection reset by peer" exception will be thrown
                         data = sock.recv(self.RECV_BUFFER)
-                        allready = self.Get_ready()
                         # echo back the client message
                         if data:
                             if "disconnecttt"==data:
@@ -99,7 +100,6 @@ class Server:
                                 data2 = data.split(' ')
                                 self.players[str(data2[1])] = self.colors[self.counter]
                                 self.counter = self.counter + 1
-                                self.ready.append(False)
                                 print "Client " + str(data2[1]) + " is online"
 
                             elif 'ready' in data:
