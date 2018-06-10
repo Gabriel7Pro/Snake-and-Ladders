@@ -27,13 +27,14 @@ class Server:
             index = index - 1
 
     def Get_ready(self):
-        if self.counteready>0:
-            for boo in self.ready:
-                if not boo:
-                    return False
-            print 'all are ready'
+        x = 0
+        for boo in ready:
+            if boo:
+                x = x + 1
+        if x == counter:
             return True
-        return False
+        else:
+            return False
 
 
     
