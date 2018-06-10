@@ -13,6 +13,8 @@ class Server:
         self.RECV_BUFFER = 4096 
         self.PORT = 5018
         self.server_socket = None
+        self.ready = []
+        self.counteready = 0
 
     def closeConnection(self):
         self.server_socket.close()
@@ -24,6 +26,11 @@ class Server:
                 return name
             index = index - 1
 
+    def Get_ready():
+        for boo in self.ready:
+            if not boo:
+                return False
+        return True
 
 
     
@@ -82,15 +89,23 @@ class Server:
                                 if len(self.CONNECTION_LIST)==1:
                                     game_wait=False
 
-                            elif "nameeeeeeeeee" in data:
+                            elif "nameeeeeeeeee" in data and not self.Get_ready():
                                 data2 = data.split(' ')
                                 self.players[str(data2[1])] = self.colors[self.counter]
                                 self.counter = self.counter + 1
+                                self.ready.append(False)
                                 print "Client " + str(data2[1]) + " is online"
 
-                            elif 'move' in data:
+                            elif 'ready' in data:
+                                self.ready[self.counteready] = True
+                                self.counteready = self.counteready + 1
+
+                            elif 'move' in data and self.Get_ready():
                                 data2 = data.split(' ')
                                 final = int(data[2]) + int(data[3])
+                                if final > 100:
+                                    sub = final % 100
+                                    final = 100 - sub
                                 if final in ledder:
                                     final = ledder[final]
                                 elif final in snakes:
