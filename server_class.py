@@ -10,7 +10,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 3042
+        self.PORT = 6068
         self.server_socket = None
         self.readylist = {}
         self.counter = 0
@@ -27,8 +27,8 @@ class Server:
             index = index - 1
 
     def Ready_game(self):
-        if counter > 0:
-            for name, ready in readylist.iteritems():
+        if self.counter > 0:
+            for name, ready in self.readylist.iteritems():
                 if not ready:
                     return False
             print "ready"
@@ -93,7 +93,7 @@ class Server:
                                 print "Client " + str(name) + " is offline"
                                 self.counter = self.counter - 1
                                 del self.players[name]
-                                del readylist[name]
+                                del self.readylist[name]
                                 sock.close()
                                 self.CONNECTION_LIST.remove(sock)
                                 if len(self.CONNECTION_LIST)==1:
@@ -109,7 +109,7 @@ class Server:
                             elif "ready" in data:
                                 name = self.Get_Name(sock)
                                 self.readylist[name] = True
-                                self.gameon = Ready_game()
+                                self.gameon = self.Ready_game()
 
 
                             elif 'move' in data and self.gameon:
