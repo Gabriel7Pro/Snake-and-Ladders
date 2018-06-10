@@ -12,9 +12,9 @@ class Server:
         self.RECV_BUFFER = 4096 
         self.PORT = 3042
         self.server_socket = None
-        self.ready = []
-        self.counteready = 0
+        self.readylist = {}
         self.counter = 0
+        self.gameon = False
 
     def closeConnection(self):
         self.server_socket.close()
@@ -26,16 +26,16 @@ class Server:
                 return name
             index = index - 1
 
-    def Get_ready(self):
-        if self.counter > 0:
-            for boo in self.ready:
-                if not boo:
+    def Ready_game(self):
+        if counter > 0:
+            for name, ready in readylist.iteritems():
+                if not ready:
                     return False
-            print 'ready'
+            print "ready"
             return True
         else:
+            print "no pip"
             return False
-
 
     
     def create(self):
@@ -61,13 +61,13 @@ class Server:
                     if socket in self.CONNECTION_LIST:
                         name = self.Get_Name(socket)
                         del players[name]
+                        self.counter = self.counter - 1
                         self.CONNECTION_LIST.remove(socket)
 
                                                
     def login(self):
         game_wait=True
         while game_wait:
-            allready = self.Get_ready()
             print self.counter
             # Get the list sockets which are ready to be read through select
             read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[]) 
@@ -96,17 +96,20 @@ class Server:
                                 if len(self.CONNECTION_LIST)==1:
                                     game_wait=False
 
-                            elif "nameeeeeeeeee" in data and not allready:
+                            elif "nameeeeeeeeee" in data and not gameon:
                                 data2 = data.split(' ')
                                 self.players[str(data2[1])] = self.colors[self.counter]
+                                self.readylist[str(data2[1])] = False
                                 self.counter = self.counter + 1
                                 print "Client " + str(data2[1]) + " is online"
 
-                            elif 'ready' in data:
-                                self.ready[self.counteready] = True
-                                self.counteready = self.counteready + 1
+                            elif "ready" in data:
+                                name = self.Get_Name(sock)
+                                self.readylist[name] = True
+                                gameon = Ready_game()
 
-                            elif 'move' in data and allready:
+
+                            elif 'move' in data and gameon:
                                 data2 = data.split(' ')
                                 final = int(data[2]) + int(data[3])
                                 if final > 100:
