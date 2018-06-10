@@ -27,7 +27,7 @@ class Server:
             index = index - 1
 
     def Get_ready(self):
-        if counter > 0:
+        if self.counteready > 0:
             for boo in self.ready:
                 if not boo:
                     return False
