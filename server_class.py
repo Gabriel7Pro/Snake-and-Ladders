@@ -74,7 +74,7 @@ class Server:
                                                
     def login(self):
         game_wait=True
-        while game_wait and not gameon:
+        while game_wait and not self.gameon:
             print self.counter
             # Get the list sockets which are ready to be read through select
             read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[]) 
@@ -143,13 +143,13 @@ class Server:
                         continue
 
         self.Send_Name()
-        while gameon:
+        while self.gameon:
             self.CONNECTION_LIST[self.turns].send("turn")
             data = self.CONNECTION_LIST[self.turns].recv(RECV_BUFFER)            
             self.turns = self.turns + 1
-            if turns > counter:
-                turns = 0
-                
+            if self.turns > self.counter:
+                self.turns = 0
+
             if "disconnecttt"==data:
                 name = self.Get_Name(sock)
                 print "Client " + str(name) + " is offline"
@@ -159,7 +159,7 @@ class Server:
                 sock.close()
                 self.CONNECTION_LIST.remove(sock)
                 if len(self.CONNECTION_LIST)==1:
-                game_wait=False
+                    self.gameon = False
 
             elif 'move' in data and self.gameon:
                 data2 = data.split(' ')
