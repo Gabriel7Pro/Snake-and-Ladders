@@ -1,6 +1,6 @@
 import socket
 import select
-
+import time
 class Server:
 
     def __init__(self):
@@ -10,7 +10,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 7078
+        self.PORT = 8783
         self.server_socket = None
         self.readylist = {}
         self.counter = 0
@@ -42,6 +42,7 @@ class Server:
         mess = "name"
         for name, color in self.players.iteritems():
             mess = mess + " " + name + " " + color
+            print mess
         self.broadcast(mess)
     
     def create(self):
@@ -144,41 +145,72 @@ class Server:
 
         self.Send_Name()
         while self.gameon:
-            read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[])
-            self.CONNECTION_LIST[self.turns].send("turn")
-            self.turns = self.turns + 1
-            if self.turns > self.counter:
-                self.turns = 0
+            # Get the list sockets which are ready to be read through select
+            read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[]) 
             for sock in read_sockets:
-                data = sock.recv(self.RECV_BUFFER)            
+                #New connection
+                if sock == self.server_socket:
+                    print "hhhhhhhhhh"
+                    # Handle the case in which there is a new connection recieved through server_socket
+                    sokfd, addr = self.server_socket.accept()
+                    self.CONNECTION_LIST.append(sockfd)               
+                #Some incoming message from a client
+                else:
+                    # Data recieved from client, process it
+                    try:
+                        #In Windows, sometimes when a TCP program closes abruptly,
+                        # a "Connection reset by peer" exception will be thrown
+                        data = sock.recv(self.RECV_BUFFER)
+                        print data
+                        # echo back the client message
+                        if data:
+                            print "sddd"
+                            if data=="finish":
+                                print "sdfsdfgdsfgds"
+                                if self.turns > self.counter:
+                                    print "sfdffgggggg"
+                                    self.turns = 1
+                                    
+                                self.CONNECTION_LIST[self.turns].send(" turn")
+                                data = self.CONNECTION_LIST[self.turns].recv(self.RECV_BUFFER)            
+                                self.turns = self.turns + 1
+                                print "zzz"
 
-                if "disconnecttt"==data:
-                    name = self.Get_Name(sock)
-                    print "Client " + str(name) + " is offline"
-                    self.counter = self.counter - 1
-                    del self.players[name]
-                    del self.readylist[name]
-                    sock.close()
-                    self.CONNECTION_LIST.remove(sock)
-                    if len(self.CONNECTION_LIST)==1:
-                        self.gameon = False
+                            elif "disconnecttt"==data:
+                                name = self.Get_Name(sock)
+                                print "Client " + str(name) + " is offline"
+                                self.counter = self.counter - 1
+                                del self.players[name]
+                                del self.readylist[name]
+                                sock.close()
+                                self.CONNECTION_LIST.remove(sock)
+                                if len(self.CONNECTION_LIST)==1:
+                                    self.gameon = False
 
-                elif 'move' in data and self.gameon:
-                    data2 = data.split(' ')
-                    final = int(data2[2]) + int(data2[3])
-                    if final > 100:
-                        sub = final % 100
-                        final = 100 - sub
-                    if final in ledder:
-                        final = ledder[final]
-                    elif final in snakes:
-                        final = snakes[final]
-                    message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
-                    broadcast(message)
-
-
-
-
+                            if 'move' in data and self.gameon:
+                                print "fgfdfffffff"
+                                data2 = data.split(' ')
+                                final = int(data2[2]) + int(data2[3])
+                                if final > 100:
+                                    sub = final % 100
+                                    final = 100 - sub
+                                if final in self.ledder:
+                                   final = self.ledder[final]
+                                elif final in self.snakes:
+                                    final = self.snakes[final]
+                                message = 'move' + ' ' + str(self.players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
+                                self.broadcast(message)
+                    except:
+                        name = self.Get_Name(sock)
+                        print "Client " + str(self.players[name]) + " is offline"
+                        self.counter = self.counter - 1
+                        del self.readylist[name]
+                        del self.players[name]
+                        sock.close()
+                        self.CONNECTION_LIST.remove(sock)
+                        if len(self.CONNECTION_LIST)==1:
+                            self.gameon=False
+                        continue                                
 
 def main():
     server = Server()

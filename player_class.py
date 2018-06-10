@@ -11,7 +11,7 @@ class Player:
     def __init__(self):
         pygame.init()
         self.Username = ""
-        self.Players = []
+        self.Players = {}
         self.master = Tk()
         self.entry = None
         self.screen = None
@@ -26,7 +26,8 @@ class Player:
         self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
         self.myfont2 = pygame.font.SysFont('Comic Sans MS', 28)
         self.ready = False #check if ready
-        
+        #self.distance =  (pygame.display.get_surface().get_size()[1]/36*31/10)-1
+        self.place = 0
 
     def closeConnection(self):
         self.s.send("disconnecttt")
@@ -169,7 +170,7 @@ class Player:
         self.screen.blit(rr,poss)
         ######
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",7078))
+        self.s.connect(("127.0.0.1",8783))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
@@ -177,9 +178,41 @@ class Player:
             rlist,wlist,xlist=select.select([self.s],[self.s],[])
             if len(rlist)!=0:
                 DA= self.s.recv(1024)
+                print DA
             #if True:
-                if "turn" in DA:
-                    dice = self.roll()
+                if DA:
+                    if "name" in DA:
+                        print "sfgdagsdfgsdfgds"
+                        DA2 = DA.split(' ')
+                        if "turn" in DA2:
+                            DA2.remove("turn")
+                        c=1
+                        print DA2
+                        while c<len(DA2):
+                            self.Players[DA2[c]] = DA2[c+1]
+                            print self.Players[DA2[c]]
+                            c=c+2
+                        self.s.send("finish")
+                        
+                    if "turn" in DA:
+                        print "hara"
+                        dice = self.roll()
+                        print "dfgfgff"
+                        turnn = True
+                        print "dfx"
+                        for key in self.Players:
+                            if turnn:
+                                print "sfg"
+                                self.s.send("move " + key + " " + str(self.place) + " " + str(dice))
+                                print "move " + key + " " + str(self.place) + " " + str(dice)
+                                turnn = False
+                        self.place = self.place + dice
+                        print "fh"
+  
+                    elif "move" in DA:
+                        print "sdf"
+                        self.s.send("finish")
+                    
                 #running = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
