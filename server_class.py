@@ -28,10 +28,10 @@ class Server:
 
     def Get_ready(self):
         x = 0
-        for boo in ready:
+        for boo in self.ready:
             if boo:
                 x = x + 1
-        if x == counter:
+        if x == self.counter and counter > 0:
             return True
         else:
             return False
