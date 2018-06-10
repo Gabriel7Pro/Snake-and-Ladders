@@ -11,7 +11,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 5018
+        self.PORT = 6057
         self.server_socket = None
         self.ready = []
         self.counteready = 0
@@ -26,12 +26,14 @@ class Server:
                 return name
             index = index - 1
 
-    def Get_ready():
-        for boo in self.ready:
-            if not boo:
-                return False
-        print 'all are ready'
-        return True
+    def Get_ready(self):
+        if self.counteready>0:
+            for boo in self.ready:
+                if not boo:
+                    return False
+            print 'all are ready'
+            return True
+        return False
 
 
     
@@ -75,7 +77,7 @@ class Server:
                 #Some incoming message from a client
                 else:
                     # Data recieved from client, process it
-                    try:
+
                         #In Windows, sometimes when a TCP program closes abruptly,
                         # a "Connection reset by peer" exception will be thrown
                         data = sock.recv(self.RECV_BUFFER)
@@ -114,15 +116,7 @@ class Server:
                                 message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
                                 broadcast(message)
 
-                    except:
-                        name = self.Get_Name(sock)
-                        print "Client " + str(self.players[name]) + " is offline"
-                        del self.players[name]
-                        sock.close()
-                        self.CONNECTION_LIST.remove(sock)
-                        if len(self.CONNECTION_LIST)==1:
-                            game_wait=False
-                        continue
+
 
 def main():
     server = Server()
