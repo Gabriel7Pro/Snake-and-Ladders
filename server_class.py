@@ -2,12 +2,12 @@ import socket
 import select
 
 class Server:
+    counter = 0
 
     def __init__(self):
         self.players = {} #the name of the clients
         self.ledder = {1 : 36, 4 : 14, 9 : 31, 21 : 42, 28 : 84, 51 : 67, 71 : 91, 80 : 100}
         self.snakes = {17 : 7, 54 : 34, 62 : 19, 64 : 60, 87 : 24, 93 : 73, 95 : 75, 98 : 79}
-        self.counter
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
@@ -46,7 +46,6 @@ class Server:
         
         # Add server socket to the list of readable connections
         self.CONNECTION_LIST.append(self.server_socket)
-        self.counter = 0
 
     
     def broadcast(self,message):
