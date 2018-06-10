@@ -3,6 +3,8 @@ import socket
 import select
 from Tkinter import *
 import easygui
+import random
+import time
 
 class Player:
 
@@ -114,10 +116,60 @@ class Player:
         
         self.game(button_ready)
 
+    def roll(self):
+        size = (pygame.display.get_surface().get_size()[1]/43*10,pygame.display.get_surface().get_size()[1]/43*10)
+        one = pygame.image.load('1.png')
+        one = pygame.transform.scale(one,size)
+        two = pygame.image.load('2.png')
+        two = pygame.transform.scale(two,size)
+        th = pygame.image.load('3.png')
+        th = pygame.transform.scale(th,size)
+        fo = pygame.image.load('4.png')
+        fo = pygame.transform.scale(fo,size)
+        fi = pygame.image.load('5.png')
+        fi = pygame.transform.scale(fi,size)
+        si = pygame.image.load('6.png')
+        si = pygame.transform.scale(si,size)
+        rr = pygame.image.load('rolling.png')
+        rr = pygame.transform.scale(rr,size)
+        num = [rr,one,two,th,fo,fi,si]
+        pla=0
+        #running2 = True
+        running2 = 4
+        poss = (pygame.display.get_surface().get_size()[0]/1.29,pygame.display.get_surface().get_size()[1]/1.315)
+        self.screen.blit(num[pla],poss)
+        
+        while running2>0:            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running2 = False
+                elif event.type == pygame.KEYDOWN:
+                    #if esc clicked, quit
+                    if event.key == pygame.K_ESCAPE:
+                        running2 = False
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    pos = pygame.mouse.get_pos()
+                    #if quit button clicked, quit
+                    if num[pla].get_rect(topleft=poss).collidepoint(pos):
+                        while running2>0:
+                            running2 = running2 -1 #del
+                            pla = random.randint(1, 6)
+                            self.screen.blit(num[pla],poss)
+                            time.sleep(0.4)
+                            pygame.display.flip()
+            pygame.display.flip()
+        return pla
         
     def game(self,button_ready):
+        ######
+        size = (pygame.display.get_surface().get_size()[1]/43*10,pygame.display.get_surface().get_size()[1]/43*10)
+        rr = pygame.image.load('rolling.png')
+        rr = pygame.transform.scale(rr,size)
+        poss = (pygame.display.get_surface().get_size()[0]/1.29,pygame.display.get_surface().get_size()[1]/1.315)        
+        self.screen.blit(rr,poss)
+        ######
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",6057))
+        self.s.connect(("127.0.0.1",7078))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
@@ -125,6 +177,10 @@ class Player:
             rlist,wlist,xlist=select.select([self.s],[self.s],[])
             if len(rlist)!=0:
                 DA= self.s.recv(1024)
+            #if True:
+                if "turn" in DA:
+                    dice = self.roll()
+                #running = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False

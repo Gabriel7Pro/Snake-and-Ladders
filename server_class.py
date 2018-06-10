@@ -5,35 +5,36 @@ class Server:
 
     def __init__(self):
         self.players = {} #the name of the clients
-        self.ledder = {1 : 36, 4 : 14, 9 : 31, 21 : 42, 28 : 84, 51 : 67, 71 : 91, 80 : 100}
+        self.ledder = {1 : 38, 4 : 14, 9 : 31, 21 : 42, 28 : 84, 51 : 67, 71 : 91, 80 : 100}
         self.snakes = {17 : 7, 54 : 34, 62 : 19, 64 : 60, 87 : 24, 93 : 73, 95 : 75, 98 : 79}
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 3042
+        self.PORT = 7078
         self.server_socket = None
-        self.ready = []
-        self.counteready = 0
+        self.readylist = {}
         self.counter = 0
+        self.gameon = False
 
     def closeConnection(self):
         self.server_socket.close()
 
     def Get_Name(self, sock):
         index = self.CONNECTION_LIST.index(sock) - 1
-        for name in self.players:
+        for name, color in self.players.iteritems():
             if index == 0:
                 return name
             index = index - 1
 
-    def Get_ready(self):
+    def Ready_game(self):
         if self.counter > 0:
-            for boo in self.ready:
-                if not boo:
+            for name, ready in self.readylist.iteritems():
+                if not ready:
                     return False
-            print 'ready'
+            print "ready"
             return True
         else:
+            print "no pip"
             return False
 
 
@@ -60,14 +61,15 @@ class Server:
                     # broken socket, remove it
                     if socket in self.CONNECTION_LIST:
                         name = self.Get_Name(socket)
+                        del readylist[name]
                         del players[name]
+                        self.counter = self.counter - 1
                         self.CONNECTION_LIST.remove(socket)
 
                                                
     def login(self):
         game_wait=True
         while game_wait:
-            allready = self.Get_ready()
             print self.counter
             # Get the list sockets which are ready to be read through select
             read_sockets,write_sockets,error_sockets = select.select(self.CONNECTION_LIST,[],[]) 
@@ -91,23 +93,26 @@ class Server:
                                 print "Client " + str(name) + " is offline"
                                 self.counter = self.counter - 1
                                 del self.players[name]
+                                del self.readylist[name]
                                 sock.close()
                                 self.CONNECTION_LIST.remove(sock)
                                 if len(self.CONNECTION_LIST)==1:
                                     game_wait=False
 
-                            elif "nameeeeeeeeee" in data and not allready:
+                            elif "nameeeeeeeeee" in data and not self.gameon:
                                 data2 = data.split(' ')
                                 self.players[str(data2[1])] = self.colors[self.counter]
+                                self.readylist[str(data2[1])] = False
                                 self.counter = self.counter + 1
-                                self.ready.append(False)
                                 print "Client " + str(data2[1]) + " is online"
 
-                            elif 'ready' in data:
-                                self.ready[self.counteready] = True
-                                self.counteready = self.counteready + 1
+                            elif "ready" in data:
+                                name = self.Get_Name(sock)
+                                self.readylist[name] = True
+                                self.gameon = self.Ready_game()
 
-                            elif 'move' in data and allready:
+
+                            elif 'move' in data and self.gameon:
                                 data2 = data.split(' ')
                                 final = int(data[2]) + int(data[3])
                                 if final > 100:
@@ -124,6 +129,7 @@ class Server:
                         name = self.Get_Name(sock)
                         print "Client " + str(self.players[name]) + " is offline"
                         self.counter = self.counter - 1
+                        del self.readylist[name]
                         del self.players[name]
                         sock.close()
                         self.CONNECTION_LIST.remove(sock)
