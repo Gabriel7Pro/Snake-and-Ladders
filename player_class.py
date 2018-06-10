@@ -88,10 +88,10 @@ class Player:
     def Login(self):
         pygame.init()
         img3 =  pygame.image.load('boared.jpg')
-        img3 = pygame.transform.scale(img3, (pygame.display.get_surface().get_size()[0]/9*5,pygame.display.get_surface().get_size()[0]/9*5))       
+        img3 = pygame.transform.scale(img3, (pygame.display.get_surface().get_size()[1]/36*31,pygame.display.get_surface().get_size()[1]/36*31))       
         img4 = pygame.image.load('oak.jpg')
-        img4 = pygame.transform.scale(img4, (pygame.display.get_surface().get_size()[0]/9*7,pygame.display.get_surface().get_size()[0]/9*5))
-        self.screen = pygame.display.set_mode((pygame.display.get_surface().get_size()[0]/9*7,pygame.display.get_surface().get_size()[0]/9*5),0)
+        img4 = pygame.transform.scale(img4, (pygame.display.get_surface().get_size()[1]*12/10,pygame.display.get_surface().get_size()[1]/36*31))
+        self.screen = pygame.display.set_mode((pygame.display.get_surface().get_size()[1]*12/10,pygame.display.get_surface().get_size()[1]/36*31),0)
         self.screen.fill(self.white)
         self.screen.blit(img4,(0,0))
         self.screen.blit(img3,(0,0))
@@ -134,11 +134,11 @@ class Player:
                         running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    #if quit button clicked, quit
-                    if button_ready.collidepoint(pos) and not self.ready:
-                        self.ready = False
-                        self.s.send("ready")
-                        easygui.msgbox("you are ready to play, please wait for the other players to be ready", title="Info")
+                    if not self.ready:
+                        if button_ready.collidepoint(pos):
+                            self.ready = True
+                            self.s.send("ready")
+                            easygui.msgbox("you are ready to play, please wait for other players to be ready", title="Info")
             pygame.display.flip()             
 
 
