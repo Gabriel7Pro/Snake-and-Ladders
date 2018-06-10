@@ -31,7 +31,8 @@ class Server:
         for boo in self.ready:
             if boo:
                 x = x + 1
-        if x == self.counter and counter > 0:
+        if x == self.counter and self.counter > 0:
+            print 'all are ready'
             return True
         else:
             return False
