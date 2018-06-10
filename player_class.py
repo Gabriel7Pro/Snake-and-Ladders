@@ -2,6 +2,7 @@ import pygame
 import socket
 import select
 from Tkinter import *
+import easygui
 
 class Player:
 
@@ -19,7 +20,10 @@ class Player:
         self.yellow=(255,255,0)
         self.red=(255,0,0)
         self.black=(0,0,0)
+        self.grey=(47,79,79)
         self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
+        self.myfont2 = pygame.font.SysFont('Comic Sans MS', 28)
+        self.ready = False #check if ready
         
 
     def closeConnection(self):
@@ -48,7 +52,6 @@ class Player:
         img = pygame.transform.scale(img, pygame.display.get_surface().get_size())
         img2 = pygame.transform.scale(img2, (pygame.display.get_surface().get_size()[0]/2,pygame.display.get_surface().get_size()[1]/5*2))
         self.screen.fill((self.white))
-        self.blue=(0,0,255)
         self.screen.blit(img,(0,0))
         self.screen.blit(img2,(pygame.display.get_surface().get_size()[0]/4,0))
         pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*3/8,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
@@ -96,8 +99,11 @@ class Player:
         pygame.draw.rect(self.screen,self.yellow,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
         pygame.draw.rect(self.screen,self.green,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
         pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3*2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        button_ready = pygame.draw.rect(self.screen,self.grey,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
         players_ = self.myfont.render('PLAYERS:', False, self.black)
+        ready_ = self.myfont2.render('Ready', False, self.white)
         self.screen.blit(players_,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/13))
+        self.screen.blit(ready_,(pygame.display.get_surface().get_size()[0]*105/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
         Label(self.master, text="Username: ").grid(row=0, sticky=W)
         self.master.title('Login')
         self.entry = Entry(self.master)
@@ -106,10 +112,10 @@ class Player:
         self.entry.bind('<Return>',self.return_entry)
         mainloop()
         
-        self.game()
+        self.game(button_ready)
 
         
-    def game(self):
+    def game(self,button_ready):
         self.s=socket.socket()
         self.s.connect(("127.0.0.1",6057))
         self.s.send("nameeeeeeeeee " + self.Username)
@@ -119,8 +125,6 @@ class Player:
             rlist,wlist,xlist=select.select([self.s],[self.s],[])
             if len(rlist)!=0:
                 DA= self.s.recv(1024)
-                if DA == "looser":
-                    running = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -128,6 +132,13 @@ class Player:
                     #if esc clicked, quit
                     if event.key == pygame.K_ESCAPE:
                         running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    pos = pygame.mouse.get_pos()
+                    #if quit button clicked, quit
+                    if button_ready.collidepoint(pos) and not self.ready:
+                        self.ready = False
+                        self.s.send("ready")
+                        easygui.msgbox("you are ready to play, please wait for the other players to be ready", title="Info")
             pygame.display.flip()             
 
 
