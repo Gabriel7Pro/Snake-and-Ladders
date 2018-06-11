@@ -35,6 +35,7 @@ class Player:
         self.place3 = None
         self.place4 = None
         self.board = None
+        self.slots = [None,None,None,None]
 
     def closeConnection(self):
         self.s.send("disconnecttt")
@@ -117,10 +118,11 @@ class Player:
         self.screen.fill(self.white)
         self.screen.blit(img4,(0,0))
         self.screen.blit(img3,(0,0))
-        pygame.draw.rect(self.screen,self.red,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/6,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,self.yellow,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,self.green,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3*2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        self.slots = [pygame.display.get_surface().get_size()[1]/6,pygame.display.get_surface().get_size()[1]/3,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[1]/3*2]
+        pygame.draw.rect(self.screen,self.red,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[0],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.yellow,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[1],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.green,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[2],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[3],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
         button_ready = pygame.draw.rect(self.screen,self.grey,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
         players_ = self.myfont.render('PLAYERS:', False, self.black)
         ready_ = self.myfont2.render('Ready', False, self.white)
@@ -218,6 +220,17 @@ class Player:
                             self.Players[DA2[c]] = DA2[c+1]
                             print self.Players[DA2[c]]
                             c=c+2
+                        c=0
+                        for key in self.Players:
+                            name_ = self.myfont.render(key, False, self.white)
+                            if self.Players[key]=="red":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[0]))
+                            elif self.Players[key]=="yellow":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[1]))
+                            elif self.Players[key]=="green":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[2]))
+                            elif self.Players[key]=="blue":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[3]))
                         self.s.send("finish")
                         self.GetPlaces()
 
