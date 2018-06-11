@@ -280,35 +280,35 @@ class Player:
                             circleRect = pygame.draw.circle(pygame.display.get_surface(), self.yellow, (self.place3[0] + x, self.place3[1] - y), 10)
                         if color == 'blue':
                             circleRect = pygame.draw.circle(pygame.display.get_surface(), self.blue, (self.place4[0] + x, self.place4[1] - y), 10)
-                        self.places[color]=int(DA2[2])
-
-
+                        
                         for color1, place in self.places.iteritems(): 
                             row1 = place%10
                             col1 = place/10
                             if col1 % 2 == 0:
                                 if row1 == 0:
-                                    x = row1 * 90
-                                    y = (col1 - 1) * 90
+                                    x1 = row1 * 90
+                                    y1 = (col1 - 1) * 90
                                 else:
-                                    x = (row1 - 1) * 90
-                                    y = col1 * 90
+                                    x1 = (row1 - 1) * 90
+                                    y1 = col1 * 90
                             else:
                                 if row1==0:
-                                    x= (10-row1-1)*90
-                                    y= (col1-1)*90
+                                    x1= (10-row1-1)*90
+                                    y1= (col1-1)*90
                                 else:
-                                    x= (10 - row1) * 90
-                                    y = col1 * 90
+                                    x1= (10 - row1) * 90
+                                    y1 = col1 * 90
                                 if color1 == 'red' and color != color1 and place != 0:
                                     print 'dddd'
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.red, (self.place1[0] + x, self.place1[1] - y), 10)
+                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.red, (self.place1[0] + x1, self.place1[1] - y1), 10)
                                 if color1 == 'green' and color != color1 and place != 0:
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.green, (self.place2[0] + x, self.place2[1] - y), 10)
+                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.green, (self.place2[0] + x1, self.place2[1] - y1), 10)
                                 if color1 == 'yellow' and color != color1 and place != 0:
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.yellow, (self.place3[0] + x, self.place3[1] - y), 10)
+                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.yellow, (self.place3[0] + x1, self.place3[1] - y1), 10)
                                 if color1 == 'blue' and color != color1 and place != 0:
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.blue, (self.place4[0] + x, self.place4[1] - y), 10)
+                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.blue, (self.place4[0] + x1, self.place4[1] - y1), 10)
+
+                            self.places[color]=int(DA2[2])
 
 
                         
