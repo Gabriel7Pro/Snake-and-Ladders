@@ -49,7 +49,7 @@ class Player:
         self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
         
         play_ = self.myfont.render('PLAY', False, self.white)
-        options_ = self.myfont.render('OPTIONS', False, self.white)
+        options_ = self.myfont.render('GAMEPLAY', False, self.white)
         quit_ = self.myfont.render('QUIT', False, self.white)
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         img = pygame.transform.scale(img, pygame.display.get_surface().get_size())
@@ -83,6 +83,10 @@ class Player:
                         disconnect = True
                     elif button_play.collidepoint(pos):
                         running = False
+                    elif button_options.collidepoint(pos):
+                         easygui.msgbox("Each player at his turn, rolles the dice and moves on the board according to what the dice lends on. \nIf the player steps on a snake he goes down the snake. If the player steps on a ledder he goes up the ledder. \nThe target is to be the first one who completes all the board from 1 to 100. \nBut not so fast, if the player has reached 100 but the dice showes he has more steps to move,the player will have to move backwards.", title="Info")
+
+                        
             pygame.display.flip()
         return disconnect
 
