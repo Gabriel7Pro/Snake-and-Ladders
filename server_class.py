@@ -10,7 +10,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 8783
+        self.PORT = 5000
         self.server_socket = None
         self.readylist = {}
         self.counter = 0
@@ -197,8 +197,11 @@ class Server:
                                 if final in self.ledder:
                                    final = self.ledder[final]
                                 elif final in self.snakes:
-                                    final = self.snakes[final]    
-                                message = 'move' + ' ' + data2[1] + ' ' + str(final) + ' ' + str(data2[3])
+                                    final = self.snakes[final]
+                                if final != 100:  
+                                	message = 'move' + ' ' + data2[1] + ' ' + str(final) + ' ' + str(data2[3])
+                                else:
+                                	message = "winnerrrrrr" + data2[1]
 
                                 self.broadcast(message)
 
