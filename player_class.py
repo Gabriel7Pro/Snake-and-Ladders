@@ -3,13 +3,15 @@ import socket
 import select
 from Tkinter import *
 import easygui
+import random
+import time
 
 class Player:
 
     def __init__(self):
         pygame.init()
         self.Username = ""
-        self.Players = []
+        self.Players = {}
         self.master = Tk()
         self.entry = None
         self.screen = None
@@ -21,10 +23,12 @@ class Player:
         self.red=(255,0,0)
         self.black=(0,0,0)
         self.grey=(47,79,79)
+        self.ready_green = (202,255,112)
         self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
         self.myfont2 = pygame.font.SysFont('Comic Sans MS', 28)
         self.ready = False #check if ready
-        
+        self.place = 0
+        self.slots = [None,None,None,None]
 
     def closeConnection(self):
         self.s.send("disconnecttt")
@@ -36,7 +40,6 @@ class Player:
         self.Username = self.entry.get()
         self.master.destroy()
 
-        
     def main_screen(self):
         pygame.init()
         img = pygame.image.load('Super-Smash-Bros.jpg')
@@ -95,10 +98,11 @@ class Player:
         self.screen.fill(self.white)
         self.screen.blit(img4,(0,0))
         self.screen.blit(img3,(0,0))
-        pygame.draw.rect(self.screen,self.red,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/6,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,self.yellow,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,self.green,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
-        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/3*2,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        self.slots = [pygame.display.get_surface().get_size()[1]/6,pygame.display.get_surface().get_size()[1]/3,pygame.display.get_surface().get_size()[1]/2,pygame.display.get_surface().get_size()[1]/3*2]
+        pygame.draw.rect(self.screen,self.red,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[0],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.yellow,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[1],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.green,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[2],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
+        pygame.draw.rect(self.screen,self.blue,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[3],pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/12),0)
         button_ready = pygame.draw.rect(self.screen,self.grey,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
         players_ = self.myfont.render('PLAYERS:', False, self.black)
         ready_ = self.myfont2.render('Ready', False, self.white)
@@ -114,10 +118,62 @@ class Player:
         
         self.game(button_ready)
 
+    def roll(self):
+        size = (pygame.display.get_surface().get_size()[1]/43*10,pygame.display.get_surface().get_size()[1]/43*10)
+        one = pygame.image.load('1.png')
+        one = pygame.transform.scale(one,size)
+        two = pygame.image.load('2.png')
+        two = pygame.transform.scale(two,size)
+        th = pygame.image.load('3.png')
+        th = pygame.transform.scale(th,size)
+        fo = pygame.image.load('4.png')
+        fo = pygame.transform.scale(fo,size)
+        fi = pygame.image.load('5.png')
+        fi = pygame.transform.scale(fi,size)
+        si = pygame.image.load('6.png')
+        si = pygame.transform.scale(si,size)
+        rr = pygame.image.load('rolling.png')
+        rr = pygame.transform.scale(rr,size)
+        num = [rr,one,two,th,fo,fi,si]
+        pla=0
+        #running2 = True
+        running2 = 4
+        poss = (pygame.display.get_surface().get_size()[0]/1.29,pygame.display.get_surface().get_size()[1]/1.315)
+        self.screen.blit(num[pla],poss)
+        
+        while running2>0:            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running2 = False
+                elif event.type == pygame.KEYDOWN:
+                    #if esc clicked, quit
+                    if event.key == pygame.K_ESCAPE:
+                        running2 = False
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    pos = pygame.mouse.get_pos()
+                    #if quit button clicked, quit
+                    if num[pla].get_rect(topleft=poss).collidepoint(pos):
+                        while running2>0:
+                            running2 = running2 -1 #del
+                            pla = random.randint(1, 6)
+                            self.screen.blit(num[pla],poss)
+                            time.sleep(0.4)
+                            pygame.display.flip()
+            pygame.display.flip()
+        return pla
         
     def game(self,button_ready):
+        turn_ = self.myfont2.render('Your turn', False, self.white)
+        notturn_ = self.myfont2.render('Please wait', False, self.white)
+        ######
+        size = (pygame.display.get_surface().get_size()[1]/43*10,pygame.display.get_surface().get_size()[1]/43*10)
+        rr = pygame.image.load('rolling.png')
+        rr = pygame.transform.scale(rr,size)
+        poss = (pygame.display.get_surface().get_size()[0]/1.29,pygame.display.get_surface().get_size()[1]/1.315)        
+        self.screen.blit(rr,poss)
+        ######
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",6057))
+        self.s.connect(("127.0.0.1",5555))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
@@ -125,6 +181,64 @@ class Player:
             rlist,wlist,xlist=select.select([self.s],[self.s],[])
             if len(rlist)!=0:
                 DA= self.s.recv(1024)
+                print DA
+            #if True:
+                if DA:
+                    if "name" in DA:
+                        DA2 = DA.split(' ')
+                        if "turn" in DA2:
+                            DA2.remove("turn")
+                        c=1
+                        print DA2
+                        while c<len(DA2):
+                            self.Players[DA2[c]] = DA2[c+1]
+                            print self.Players[DA2[c]]
+                            c=c+2
+                        #for key in Players:
+                        c=0
+                        for key in self.Players:
+                            name_ = self.myfont.render(key, False, self.white)
+                            if self.Players[key]=="red":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[0]))
+                            elif self.Players[key]=="yellow":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[1]))
+                            elif self.Players[key]=="green":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[2]))
+                            elif self.Players[key]=="blue":
+                                self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[3]))
+                        self.s.send("finish")
+                        
+                        
+                    if "turn" in DA:
+                        pygame.draw.rect(self.screen,(255,97,3),(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
+                        self.screen.blit(turn_,(pygame.display.get_surface().get_size()[0]*103/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
+                        dice = self.roll()
+                        self.s.send("move " + str(self.Username) + " " + str(self.place) + " " + str(dice))
+                        print "move " + str(self.Username) + " " + str(self.place) + " " + str(dice)
+                        self.place = self.place + dice
+                        pygame.draw.rect(self.screen,(255,97,3),(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
+                        self.screen.blit(notturn_,(pygame.display.get_surface().get_size()[0]*102/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
+
+  
+                    elif "move" in DA:
+                        DA2 = DA.split(' ')
+                        
+                        if self.Username == DA2[1]:
+                            self.place= int(DA2[2])
+                        self.s.send("finish")
+                        
+                    if "winnerrrrrr" in DA:
+                        DA2 = DA.split(' ')
+                        if DA2[1]==self.Username:
+                            easygui.msgbox("Congratulations, you won the game", title="Info")
+
+                        else:
+                            easygui.msgbox("The player " + DA2[1] + "with the color " + self.Players[DA2[1]] + "won the game", title="Info")
+                        time.sleep(5)
+                        break
+                        
+                    
+                #running = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -137,8 +251,12 @@ class Player:
                     if not self.ready:
                         if button_ready.collidepoint(pos):
                             self.ready = True
+                            pygame.draw.rect(self.screen,self.ready_green,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
+                            ready_ = self.myfont2.render('Ready', False, self.white)
+                            self.screen.blit(ready_,(pygame.display.get_surface().get_size()[0]*105/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
                             self.s.send("ready")
                             easygui.msgbox("you are ready to play, please wait for other players to be ready", title="Info")
+                            
             pygame.display.flip()             
 
 
