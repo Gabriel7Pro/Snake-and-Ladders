@@ -198,19 +198,17 @@ class Player:
                         print "hara"
                         dice = self.roll()
                         print "dfgfgff"
-                        turnn = True
                         print "dfx"
-                        for key in self.Players:
-                            if turnn:
-                                print "sfg"
-                                self.s.send("move " + key + " " + str(self.place) + " " + str(dice))
-                                print "move " + key + " " + str(self.place) + " " + str(dice)
-                                turnn = False
+                        self.s.send("move " + str(self.Username) + " " + str(self.place) + " " + str(dice))
+                        print "move " + str(self.Username) + " " + str(self.place) + " " + str(dice)
                         self.place = self.place + dice
                         print "fh"
   
                     elif "move" in DA:
-                        print "sdf"
+                        DA2 = DA.split(' ')
+                        
+                        if self.Username == DA2[1]:
+                            self.place= int(DA2[2])
                         self.s.send("finish")
                     
                 #running = False

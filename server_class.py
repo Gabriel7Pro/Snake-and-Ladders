@@ -128,7 +128,7 @@ class Server:
                                     final = ledder[final]
                                 elif final in snakes:
                                     final = snakes[final]
-                                message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
+                                message = 'move' + ' ' + str(players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])      
                                 broadcast(message)
 
                     except:
@@ -198,8 +198,9 @@ class Server:
                                    final = self.ledder[final]
                                 elif final in self.snakes:
                                     final = self.snakes[final]
-                                message = 'move' + ' ' + str(self.players[data2[1]]) + ' ' + str(final) + ' ' + str(data2[3])
+                                message = 'move' + ' ' + data2[1] + ' ' + str(final) + ' ' + str(data2[3])
                                 self.broadcast(message)
+
                     except:
                         name = self.Get_Name(sock)
                         print "Client " + str(self.players[name]) + " is offline"
