@@ -23,6 +23,7 @@ class Player:
         self.red=(255,0,0)
         self.black=(0,0,0)
         self.grey=(47,79,79)
+        self.ready_green = (202,255,112)
         self.myfont = pygame.font.SysFont('Comic Sans MS', 40)
         self.myfont2 = pygame.font.SysFont('Comic Sans MS', 28)
         self.ready = False #check if ready
@@ -39,7 +40,6 @@ class Player:
         self.Username = self.entry.get()
         self.master.destroy()
 
-        
     def main_screen(self):
         pygame.init()
         img = pygame.image.load('Super-Smash-Bros.jpg')
@@ -162,6 +162,8 @@ class Player:
         return pla
         
     def game(self,button_ready):
+        turn_ = self.myfont2.render('Your turn', False, self.white)
+        notturn_ = self.myfont2.render('Please wait', False, self.white)
         ######
         size = (pygame.display.get_surface().get_size()[1]/43*10,pygame.display.get_surface().get_size()[1]/43*10)
         rr = pygame.image.load('rolling.png')
@@ -182,7 +184,6 @@ class Player:
             #if True:
                 if DA:
                     if "name" in DA:
-                        print "sfgdagsdfgsdfgds"
                         DA2 = DA.split(' ')
                         if "turn" in DA2:
                             DA2.remove("turn")
@@ -195,14 +196,15 @@ class Player:
                         self.s.send("finish")
                         
                     if "turn" in DA:
-                        print "hara"
+                        pygame.draw.rect(self.screen,(255,97,3),(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
+                        self.screen.blit(turn_,(pygame.display.get_surface().get_size()[0]*103/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
                         dice = self.roll()
-                        print "dfgfgff"
-                        print "dfx"
                         self.s.send("move " + str(self.Username) + " " + str(self.place) + " " + str(dice))
                         print "move " + str(self.Username) + " " + str(self.place) + " " + str(dice)
                         self.place = self.place + dice
-                        print "fh"
+                        pygame.draw.rect(self.screen,(255,97,3),(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
+                        self.screen.blit(notturn_,(pygame.display.get_surface().get_size()[0]*102/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
+
   
                     elif "move" in DA:
                         DA2 = DA.split(' ')
@@ -210,6 +212,15 @@ class Player:
                         if self.Username == DA2[1]:
                             self.place= int(DA2[2])
                         self.s.send("finish")
+                        
+                    elif "winnerrrrrr" in DA:
+                        DA2 = DA.split(' ')
+                        if DA2[1]==self.Username:
+                            easygui.msgbox("Congratulations, you won the game", title="Info")
+
+                        else:
+                            easygui.msgbox("The player " + DA2[1] + "with the color " + self.Players[DA2[1]] + "won the game", title="Info")
+                        
                     
                 #running = False
             for event in pygame.event.get():
@@ -224,8 +235,12 @@ class Player:
                     if not self.ready:
                         if button_ready.collidepoint(pos):
                             self.ready = True
+                            pygame.draw.rect(self.screen,self.ready_green,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
+                            ready_ = self.myfont2.render('Ready', False, self.white)
+                            self.screen.blit(ready_,(pygame.display.get_surface().get_size()[0]*105/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
                             self.s.send("ready")
                             easygui.msgbox("you are ready to play, please wait for other players to be ready", title="Info")
+                            
             pygame.display.flip()             
 
 

@@ -197,8 +197,9 @@ class Server:
                                 if final in self.ledder:
                                    final = self.ledder[final]
                                 elif final in self.snakes:
-                                    final = self.snakes[final]
+                                    final = self.snakes[final]    
                                 message = 'move' + ' ' + data2[1] + ' ' + str(final) + ' ' + str(data2[3])
+
                                 self.broadcast(message)
 
                     except:
