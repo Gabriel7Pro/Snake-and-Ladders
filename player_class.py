@@ -213,13 +213,15 @@ class Player:
                             self.place= int(DA2[2])
                         self.s.send("finish")
                         
-                    elif "winnerrrrrr" in DA:
+                    if "winnerrrrrr" in DA:
                         DA2 = DA.split(' ')
                         if DA2[1]==self.Username:
                             easygui.msgbox("Congratulations, you won the game", title="Info")
 
                         else:
                             easygui.msgbox("The player " + DA2[1] + "with the color " + self.Players[DA2[1]] + "won the game", title="Info")
+                        time.sleep(5)
+                        break
                         
                     
                 #running = False
