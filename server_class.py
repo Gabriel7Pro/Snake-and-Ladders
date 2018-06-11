@@ -10,7 +10,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 5001
+        self.PORT = 5004
         self.server_socket = None
         self.readylist = {}
         self.counter = 0
