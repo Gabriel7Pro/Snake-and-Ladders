@@ -11,6 +11,7 @@ class Player:
     def __init__(self):
         pygame.init()
         self.Username = ""
+        self.places = {}
         self.Players = {}
         self.master = Tk()
         self.entry = None
@@ -29,16 +30,33 @@ class Player:
         self.ready = False #check if ready
         #self.distance =  (pygame.display.get_surface().get_size()[1]/36*31/10)-1
         self.place = 0
+        self.place1 = None
+        self.place2 = None
+        self.place3 = None
+        self.place4 = None
+        self.board = None
 
     def closeConnection(self):
         self.s.send("disconnecttt")
         self.s.close()
+
+    def Get_Index(self, color):
+        index = 0
+        for c in self.places:
+            if color == c:
+                return index
+            index = index + 1
 
 
     def return_entry(self,en):
         """Gets and prints the content of the entry"""
         self.Username = self.entry.get()
         self.master.destroy()
+
+    def GetPlaces(self):
+        for name ,color in self.Players.iteritems():
+            self.places[color]=0
+
 
     def main_screen(self):
         pygame.init()
@@ -91,7 +109,8 @@ class Player:
     def Login(self):
         pygame.init()
         img3 =  pygame.image.load('boared.jpg')
-        img3 = pygame.transform.scale(img3, (pygame.display.get_surface().get_size()[1]/36*31,pygame.display.get_surface().get_size()[1]/36*31))       
+        img3 = pygame.transform.scale(img3, (pygame.display.get_surface().get_size()[1]/36*31,pygame.display.get_surface().get_size()[1]/36*31))  
+        self.board=img3     
         img4 = pygame.image.load('oak.jpg')
         img4 = pygame.transform.scale(img4, (pygame.display.get_surface().get_size()[1]*12/10,pygame.display.get_surface().get_size()[1]/36*31))
         self.screen = pygame.display.set_mode((pygame.display.get_surface().get_size()[1]*12/10,pygame.display.get_surface().get_size()[1]/36*31),0)
@@ -107,6 +126,8 @@ class Player:
         ready_ = self.myfont2.render('Ready', False, self.white)
         self.screen.blit(players_,(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/13))
         self.screen.blit(ready_,(pygame.display.get_surface().get_size()[0]*105/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
+        self.place1 = [25, pygame.display.get_surface().get_size()[1]/36*31 + 67]
+        circleRect = pygame.draw.circle(pygame.display.get_surface(), self.red, (self.place1[0], self.place1[1]), 10)
         Label(self.master, text="Username: ").grid(row=0, sticky=W)
         self.master.title('Login')
         self.entry = Entry(self.master)
@@ -170,9 +191,13 @@ class Player:
         rr = pygame.transform.scale(rr,size)
         poss = (pygame.display.get_surface().get_size()[0]/1.29,pygame.display.get_surface().get_size()[1]/1.315)        
         self.screen.blit(rr,poss)
+        self.place1 = [25, pygame.display.get_surface().get_size()[1]/36*31 + 67]
+        self.place2 = [25, pygame.display.get_surface().get_size()[1]/36*31 + 127]
+        self.place3 = [85, pygame.display.get_surface().get_size()[1]/36*31 + 127]
+        self.place4 = [85, pygame.display.get_surface().get_size()[1]/36*31 + 67]
         ######
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",8783))
+        self.s.connect(("127.0.0.1",5001))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
@@ -194,6 +219,8 @@ class Player:
                             print self.Players[DA2[c]]
                             c=c+2
                         self.s.send("finish")
+                        self.GetPlaces()
+
                         
                     if "turn" in DA:
                         pygame.draw.rect(self.screen,(255,97,3),(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
@@ -207,11 +234,43 @@ class Player:
 
   
                     elif "move" in DA:
-                        DA2 = DA.split(' ')
-                        
+                        DA2 = DA.split(' ')        
                         if self.Username == DA2[1]:
                             self.place= int(DA2[2])
                         self.s.send("finish")
+                        color= self.Players[self.Username]
+                        self.screen.blit(self.board,(0,0))
+                        row = int(DA2[2])%10
+                        col = int(DA2[2])/10
+                        print row
+                        print col
+                        for color , place in self.places.iteritems():
+                            if col % 2 == 0:
+                                if row == 0:
+                                    x = row * 90
+                                    y = (col - 1) * 90
+                                else:
+                                    x = (row - 1) * 90
+                                    y = col * 90
+                            else:
+                                if row==0:
+                                    x= (10-row-1)*90
+                                    y= (col-1)*90
+                                else:
+                                    x= (10 - row) * 90
+                                    y = col * 90
+                            if color == 'red':
+                                print 'dddd'
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.red, (self.place1[0] + x, self.place1[1] - y), 10)
+                            if color == 'green':
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.green, (self.place2[0] + x, self.place2[1] - y), 10)
+                            if color == 'yellow':
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.yellow, (self.place3[0] + x, self.place3[1] - y), 10)
+                            if color == 'blue':
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.blue, (self.place4[0] + x, self.place4[1] - y), 10)
+                        self.places[color]=int(DA2[2])
+
+
                         
                     if "winnerrrrrr" in DA:
                         DA2 = DA.split(' ')

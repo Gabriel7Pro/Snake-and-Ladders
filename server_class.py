@@ -10,7 +10,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 5000
+        self.PORT = 5001
         self.server_socket = None
         self.readylist = {}
         self.counter = 0
@@ -201,7 +201,7 @@ class Server:
                                 if final != 100:  
                                 	message = 'move' + ' ' + data2[1] + ' ' + str(final) + ' ' + str(data2[3])
                                 else:
-                                	message = "winnerrrrrr" + data2[1]
+                                	message = "winnerrrrrr " + data2[1]
 
                                 self.broadcast(message)
 
