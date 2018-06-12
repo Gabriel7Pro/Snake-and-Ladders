@@ -199,7 +199,7 @@ class Player:
         self.place4 = [85, pygame.display.get_surface().get_size()[1]/36*31 + 67]
         ######
         self.s=socket.socket()
-        self.s.connect(("127.0.0.1",5004))
+        self.s.connect(("127.0.0.1",5023))
         self.s.send("nameeeeeeeeee " + self.Username)
         Da= None
         running = True
@@ -207,7 +207,6 @@ class Player:
             rlist,wlist,xlist=select.select([self.s],[self.s],[])
             if len(rlist)!=0:
                 DA= self.s.recv(1024)
-                print DA
             #if True:
                 if DA:
                     if "name" in DA:
@@ -231,11 +230,49 @@ class Player:
                                 self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[2]))
                             elif self.Players[key]=="blue":
                                 self.screen.blit(name_,(pygame.display.get_surface().get_size()[0]*47/64,self.slots[3]))
-                        self.s.send("finish")
+                        self.s.send("name finish")
+                        print "name finish"
                         self.GetPlaces()
 
-                        
-                    if "turn" in DA:
+                    if "move" in DA:
+                        DA2 = DA.split(' ')        
+                        if self.Username == DA2[1]:
+                            self.place= int(DA2[2])
+                        color= self.Players[self.Username]
+                        self.screen.blit(self.board,(0,0))
+                        row = int(DA2[2])%10
+                        col = int(DA2[2])/10
+                        print row
+                        print col
+                        for color , place in self.places.iteritems():
+                            if col % 2 == 0:
+                                if row == 0:
+                                    x = row * 90
+                                    y = (col - 1) * 90
+                                else:
+                                    x = (row - 1) * 90
+                                    y = col * 90
+                            else:
+                                if row==0:
+                                    x= (10-row-1)*90
+                                    y= (col-1)*90
+                                else:
+                                    x= (10 - row) * 90
+                                    y = col * 90
+                            if color == 'red':
+                                print 'dddd'
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.red, (self.place1[0] + x, self.place1[1] - y), 10)
+                            if color == 'green':
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.green, (self.place2[0] + x, self.place2[1] - y), 10)
+                            if color == 'yellow':
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.yellow, (self.place3[0] + x, self.place3[1] - y), 10)
+                            if color == 'blue':
+                                circleRect = pygame.draw.circle(pygame.display.get_surface(), self.blue, (self.place4[0] + x, self.place4[1] - y), 10)
+                        self.places[color]=int(DA2[2])
+                        self.s.send(self.Username + " finish")
+                        print "move finish" 
+                       
+                    elif "turn" in DA:
                         pygame.draw.rect(self.screen,(255,97,3),(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
                         self.screen.blit(turn_,(pygame.display.get_surface().get_size()[0]*103/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
                         dice = self.roll()
@@ -245,73 +282,7 @@ class Player:
                         pygame.draw.rect(self.screen,(255,97,3),(pygame.display.get_surface().get_size()[0]*47/64,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16),0)
                         self.screen.blit(notturn_,(pygame.display.get_surface().get_size()[0]*102/128,pygame.display.get_surface().get_size()[1]/60,pygame.display.get_surface().get_size()[0]/4,pygame.display.get_surface().get_size()[1]/16))
 
-  
-                    elif "move" in DA:
-                        DA2 = DA.split(' ')        
-                        if self.Username == DA2[1]:
-                            self.place= int(DA2[2])
-                        self.s.send("finish")
-                        self.screen.blit(self.board,(0,0))
-                        row = int(DA2[2])%10
-                        col = int(DA2[2])/10
-                        color = self.Players[DA2[1]]
-                        print row
-                        print col
-                        if col % 2 == 0:
-                            if row == 0:
-                                x = row * 90
-                                y = (col - 1) * 90
-                            else:
-                                x = (row - 1) * 90
-                                y = col * 90
-                        else:
-                            if row==0:
-                                x= (10-row-1)*90
-                                y= (col-1)*90
-                            else:
-                                x= (10 - row) * 90
-                                y = col * 90
-                        if color == 'red':
-                            print 'dddd'
-                            circleRect = pygame.draw.circle(pygame.display.get_surface(), self.red, (self.place1[0] + x, self.place1[1] - y), 10)
-                        if color == 'green':
-                            circleRect = pygame.draw.circle(pygame.display.get_surface(), self.green, (self.place2[0] + x, self.place2[1] - y), 10)
-                        if color == 'yellow':
-                            circleRect = pygame.draw.circle(pygame.display.get_surface(), self.yellow, (self.place3[0] + x, self.place3[1] - y), 10)
-                        if color == 'blue':
-                            circleRect = pygame.draw.circle(pygame.display.get_surface(), self.blue, (self.place4[0] + x, self.place4[1] - y), 10)
-                        
-                        for color1, place in self.places.iteritems(): 
-                            row1 = place%10
-                            col1 = place/10
-                            if col1 % 2 == 0:
-                                if row1 == 0:
-                                    x1 = row1 * 90
-                                    y1 = (col1 - 1) * 90
-                                else:
-                                    x1 = (row1 - 1) * 90
-                                    y1 = col1 * 90
-                            else:
-                                if row1==0:
-                                    x1= (10-row1-1)*90
-                                    y1= (col1-1)*90
-                                else:
-                                    x1= (10 - row1) * 90
-                                    y1 = col1 * 90
-                                if color1 == 'red' and color != color1 and place != 0:
-                                    print 'dddd'
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.red, (self.place1[0] + x1, self.place1[1] - y1), 10)
-                                if color1 == 'green' and color != color1 and place != 0:
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.green, (self.place2[0] + x1, self.place2[1] - y1), 10)
-                                if color1 == 'yellow' and color != color1 and place != 0:
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.yellow, (self.place3[0] + x1, self.place3[1] - y1), 10)
-                                if color1 == 'blue' and color != color1 and place != 0:
-                                    circleRect = pygame.draw.circle(pygame.display.get_surface(), self.blue, (self.place4[0] + x1, self.place4[1] - y1), 10)
-
-                            self.places[color]=int(DA2[2])
-
-
-                        
+ 
                     if "winnerrrrrr" in DA:
                         DA2 = DA.split(' ')
                         if DA2[1]==self.Username:

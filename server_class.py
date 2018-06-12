@@ -10,7 +10,7 @@ class Server:
         self.colors = ['red', 'yellow', 'green', 'blue']
         self.CONNECTION_LIST = [] # list of socket clients
         self.RECV_BUFFER = 4096 
-        self.PORT = 5004
+        self.PORT = 5023
         self.server_socket = None
         self.readylist = {}
         self.counter = 0
@@ -150,7 +150,6 @@ class Server:
             for sock in read_sockets:
                 #New connection
                 if sock == self.server_socket:
-                    print "hhhhhhhhhh"
                     # Handle the case in which there is a new connection recieved through server_socket
                     sokfd, addr = self.server_socket.accept()
                     self.CONNECTION_LIST.append(sockfd)               
@@ -164,17 +163,15 @@ class Server:
                         print data
                         # echo back the client message
                         if data:
-                            print "sddd"
-                            if data=="finish":
-                                print "sdfsdfgdsfgds"
+                            if "finish" in data:
+                                da = data.split(' ')
                                 if self.turns > self.counter:
-                                    print "sfdffgggggg"
                                     self.turns = 1
                                     
-                                self.CONNECTION_LIST[self.turns].send(" turn")
+                                self.CONNECTION_LIST[self.turns].send(da[1] + " turn")
+                                print "turn " + self.Get_Name( self.CONNECTION_LIST[self.turns])
                                 data = self.CONNECTION_LIST[self.turns].recv(self.RECV_BUFFER)            
                                 self.turns = self.turns + 1
-                                print "zzz"
 
                             elif "disconnecttt"==data:
                                 name = self.Get_Name(sock)
@@ -188,7 +185,6 @@ class Server:
                                     self.gameon = False
 
                             if 'move' in data and self.gameon:
-                                print "fgfdfffffff"
                                 data2 = data.split(' ')
                                 final = int(data2[2]) + int(data2[3])
                                 if final > 100:
